@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💎 MarketHub - Marketplace Santa Rosa</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f2744 100%);
+            color: #e0e7ff;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        #root {
+            min-height: 100vh;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const Marketplace = () => {
+          const [usuarioLogado, setUsuarioLogado] = useState(JSON.parse(localStorage.getItem('usuarioLogado')));
+          const [usuarioIP, setUsuarioIP] = useState(null);
+          const [tela, setTela] = useState(usuarioLogado ? 'inicio' : 'login');
+          
+          const [usuarios, setUsuarios] = useState(JSON.parse(localStorage.getItem('usuarios')) || {
+            'teste@test.com': { 
+              id: 'teste123', 
+              nome: '🧪 Teste Completo', 
+              email: 'teste@test.com', 
+              senha: '123', 
+              cidade: 'Santa Rosa', 
+              tipo: 'vendedor-comprador',
+              descricao: '👤 Use esta conta para testar TODAS as funcionalidades!'
+            },
+            'vendedor@test.com': { id: 'v1', nome: 'João Silva', email: 'vendedor@test.com', senha: '123', cidade: 'Santa Rosa', tipo: 'vendedor-comprador' },
+            'comprador@test.com': { id: 'c1', nome: 'Maria Santos', email: 'comprador@test.com', senha: '123', cidade: 'Santa Rosa', tipo: 'vendedor-comprador' }
+          });
+
+          const [produtos, setProdutos] = useState(JSON.parse(localStorage.getItem('produtos')) || [
+            {
+              id: 1001,
+              nome: '🍽️ Marmita Teste',
+              preco_anuncio: 45,
+              preco_minimo: 35,
+              preco_repassado: 35,
+              emoji: '🍽️',
+              categoria: 'Viandas',
+              estado: 'RS',
+              fotos: [],
+              faz_entrega: true,
+              valor_frete: 0,
+              preco_minimo_frete: 0,
+              raio_entrega: 5,
+              cidade_vendedor: 'Santa Rosa',
+              vendedorId: 'teste123',
+              vendedorNome: '🧪 Teste Completo',
+              ip_vendedor: '192.168.1.1',
+              com_selo_confianca: true,
+              com_desconto_progressivo: false,
+              permitir_combo: false,
+              descricao_combo: '',
+              desconto_combo: 0,
+              aceita_reducao_automatica: true,
+              data_publicacao: new Date().getTime(),
+              dias_reducao: 0,
+              eh_vianda: true,
+              dias_semana: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
+              quantidade_diaria: 15,
+              proxima_renovacao: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000).getTime(),
+              dataCriacao: new Date().getTime(),
+              visualizacoes: 23,
+              em_negociacao: 1,
+              status: 'ativo'
+            },
+            {
+              id: 1002,
+              nome: '📱 Smartphone Teste',
+              preco_anuncio: 1200,
+              preco_minimo: 800,
+              preco_repassado: 800,
+              emoji: '📱',
+              categoria: 'Eletrônicos',
+              estado: 'RS',
+              fotos: [],
+              faz_entrega: true,
+              valor_frete: 50,
+              preco_minimo_frete: 15,
+              raio_entrega: 20,
+              cidade_vendedor: 'Santa Rosa',
+              vendedorId: 'teste123',
+              vendedorNome: '🧪 Teste Completo',
+              ip_vendedor: '192.168.1.1',
+              com_selo_confianca: false,
+              com_desconto_progressivo: true,
+              permitir_combo: true,
+              descricao_combo: '2 unidades = 10% desconto',
+              desconto_combo: 120,
+              aceita_reducao_automatica: false,
+              data_publicacao: new Date().getTime(),
+              dias_reducao: 0,
+              eh_vianda: false,
+              dias_semana: [],
+              quantidade_diaria: 0,
+              proxima_renovacao: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000).getTime(),
+              dataCriacao: new Date().getTime(),
+              visualizacoes: 156,
+              em_negociacao: 5,
+              status: 'ativo'
+            },
+            {
+              id: 1003,
+              nome: '👕 Camiseta Teste',
+              preco_anuncio: 89,
+              preco_minimo: 45,
+              preco_repassado: 45,
+              emoji: '👕',
+              categoria: 'Moda',
+              estado: 'RS',
+              fotos: [],
+              faz_entrega: true,
+              valor_frete: 0,
+              preco_minimo_frete: 0,
+              raio_entrega: 100,
+              cidade_vendedor: 'Santa Rosa',
+              vendedorId: 'teste123',
+              vendedorNome: '🧪 Teste Completo',
+              ip_vendedor: '192.168.1.1',
+              com_selo_confianca: true,
+              com_desconto_progressivo: false,
+              permitir_combo: false,
+              descricao_combo: '',
+              desconto_combo: 0,
+              aceita_reducao_automatica: true,
+              data_publicacao: new Date(new Date().getTime() - 10 * 24 * 60 * 60 * 1000).getTime(),
+              dias_reducao: 0,
+              eh_vianda: false,
+              dias_semana: [],
+              quantidade_diaria: 0,
+              proxima_renovacao: new Date(new Date().getTime() + 20 * 24 * 60 * 60 * 1000).getTime(),
+              dataCriacao: new Date(new Date().getTime() - 10 * 24 * 60 * 60 * 1000).getTime(),
+              visualizacoes: 89,
+              em_negociacao: 3,
+              status: 'ativo'
+            }
+          ]);
+
+          const [loginEmail, setLoginEmail] = useState('');
+          const [loginSenha, setLoginSenha] = useState('');
+          const [filtroCategoria, setFiltroCategoria] = useState('Todos');
+          const [filtroCidade, setFiltroCidade] = useState('RS');
+          const [busca, setBusca] = useState('');
+          const [filtroTempo, setFiltroTempo] = useState('todos');
+          const [chatAberto, setChatAberto] = useState(null);
+          const [mensagens, setMensagens] = useState([]);
+          const [inputChat, setInputChat] = useState('');
+          const [ofertaAtual, setOfertaAtual] = useState('');
+          const [negociacoesAtivas, setNegociacoesAtivas] = useState({});
+
+          // Salvar estado
+          useEffect(() => {
+            localStorage.setItem('usuarioLogado', JSON.stringify(usuarioLogado));
+          }, [usuarioLogado]);
+
+          useEffect(() => {
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+          }, [usuarios]);
+
+          useEffect(() => {
+            localStorage.setItem('produtos', JSON.stringify(produtos));
+          }, [produtos]);
+
+          // CAPTURAR IP
+          useEffect(() => {
+            const capturarIP = async () => {
+              try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                setUsuarioIP(data.ip);
+              } catch (error) {
+                console.log('Modo offline');
+              }
+            };
+            capturarIP();
+          }, []);
+
+          // LOGIN
+          const fazerLogin = () => {
+            const user = usuarios[loginEmail];
+            if (user && user.senha === loginSenha) {
+              setUsuarioLogado(user);
+              setTela('inicio');
+              setLoginEmail('');
+              setLoginSenha('');
+            } else {
+              alert('Email ou senha incorretos');
+            }
+          };
+
+          // CATEGORIZAR POR TEMPO
+          const categorizarPorTempo = (dataCriacao) => {
+            const agora = new Date().getTime();
+            const diff = agora - dataCriacao;
+            const horas = Math.floor(diff / (1000 * 60 * 60));
+            const dias = Math.floor(horas / 24);
+            
+            if (dias === 0) return 'novo';
+            if (dias === 1) return 'rapido';
+            if (dias >= 2 && dias <= 25) return 'vendendo';
+            if (dias >= 26 && dias <= 29) return 'liquidando';
+            if (dias >= 30) return 'saldao';
+          };
+
+          // PODE NEGOCIAR
+          const podeNegociar = (produto) => {
+            if (!usuarioLogado) return true;
+            if (usuarioLogado.id === produto.vendedorId) return false;
+            if (usuarioIP && produto.ip_vendedor && usuarioIP === produto.ip_vendedor) return false;
+            return true;
+          };
+
+          // MOTIVO DO BLOQUEIO
+          const motivoBloqueio = (produto) => {
+            if (usuarioLogado.id === produto.vendedorId) {
+              return "Este é seu produto! Você não pode negociar consigo mesmo.";
+            }
+            if (usuarioIP && produto.ip_vendedor && usuarioIP === produto.ip_vendedor) {
+              return `🔒 Bloqueado por segurança: Mesma rede (IP: ${usuarioIP})`;
+            }
+            return "";
+          };
+
+          // ABRIR CHAT
+          const abrirChat = (produto) => {
+            if (!usuarioLogado) {
+              alert('Faça login para negociar!');
+              setTela('login');
+              return;
+            }
+
+            if (!podeNegociar(produto)) {
+              alert(`❌ ${motivoBloqueio(produto)}`);
+              return;
+            }
+
+            setChatAberto(produto);
+            setNegociacoesAtivas(prev => ({
+              ...prev,
+              [produto.id]: true
+            }));
+            setMensagens([
+              {
+                id: 1,
+                tipo: 'bot',
+                texto: `👋 Olá! Bem-vindo à negociação!\n\n📦 Produto: ${produto.nome}\n💚 Preço: R$ ${produto.preco_anuncio.toLocaleString('pt-BR')}\n✅ Frete: GRÁTIS\n\n💰 Qual é sua melhor oferta?\n(Digite um número, ex: 2500)`
+              }
+            ]);
+            setOfertaAtual(produto.preco_anuncio.toString());
+          };
+
+          const fecharChat = () => {
+            setNegociacoesAtivas(prev => {
+              const novo = { ...prev };
+              delete novo[chatAberto.id];
+              return novo;
+            });
+            setChatAberto(null);
+            setMensagens([]);
+            setInputChat('');
+          };
+
+          const enviarMensagem = () => {
+            if (!inputChat.trim()) return;
+
+            setMensagens(prev => [...prev, {
+              id: Date.now(),
+              tipo: 'comprador',
+              texto: inputChat
+            }]);
+
+            if (!isNaN(inputChat) && inputChat.trim() !== '') {
+              setOfertaAtual(inputChat);
+            }
+
+            setTimeout(() => {
+              setMensagens(prev => [...prev, {
+                id: Date.now() + 1,
+                tipo: 'vendedor',
+                texto: '⏳ Analisando sua proposta...'
+              }]);
+            }, 800);
+
+            setInputChat('');
+          };
+
+          const logout = () => {
+            setUsuarioLogado(null);
+            setTela('login');
+          };
+
+          const navbar = (
+            <nav className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white shadow-2xl p-5 flex justify-between items-center border-b-2 border-purple-500/50 backdrop-blur-lg">
+              <div className="flex items-center gap-3">
+                <div className="text-3xl font-black bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent drop-shadow-lg">
+                  💎 MarketHub
+                </div>
+              </div>
+              
+              {usuarioLogado ? (
+                <div className="flex items-center gap-6">
+                  <div className="hidden sm:block text-right">
+                    <p className="font-bold text-base text-white">{usuarioLogado.nome}</p>
+                    <p className="text-xs text-purple-300">📍 {usuarioLogado.cidade}</p>
+                  </div>
+                  <button
+                    onClick={logout}
+                    className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 shadow-lg hover:shadow-red-500/50 border border-red-400/30"
+                  >
+                    🚪 Sair
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setTela('login')}
+                  className="flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 shadow-lg hover:shadow-cyan-500/50 border border-cyan-300/30"
+                >
+                  🔑 Entrar
+                </button>
+              )}
+            </nav>
+          );
+
+          // TELA LOGIN
+          if (tela === 'login' && !usuarioLogado) {
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex flex-col">
+                {navbar}
+                <div className="flex-1 flex items-center justify-center p-4">
+                  <div className="w-full max-w-md">
+                    <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-purple-500/20">
+                      <div className="text-center mb-8">
+                        <h1 className="text-4xl font-black mb-2 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                          Bem-vindo
+                        </h1>
+                        <p className="text-purple-300 font-medium">Faça login para continuar</p>
+                      </div>
+
+                      <input
+                        type="email"
+                        placeholder="📧 Email"
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
+                        className="w-full px-5 py-3 bg-slate-800/50 border-2 border-purple-500/30 rounded-xl mb-4 text-white placeholder-purple-400/60 focus:outline-none focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 transition-all font-medium"
+                      />
+                      <input
+                        type="password"
+                        placeholder="🔐 Senha"
+                        value={loginSenha}
+                        onChange={(e) => setLoginSenha(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && fazerLogin()}
+                        className="w-full px-5 py-3 bg-slate-800/50 border-2 border-purple-500/30 rounded-xl mb-6 text-white placeholder-purple-400/60 focus:outline-none focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 transition-all font-medium"
+                      />
+
+                      <button
+                        onClick={fazerLogin}
+                        className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3 rounded-xl mb-3 transition-all duration-300 shadow-lg hover:shadow-cyan-500/50 border border-cyan-300/30 uppercase tracking-wider text-sm"
+                      >
+                        ⚡ Entrar
+                      </button>
+
+                      <div className="mt-8 pt-6 border-t border-purple-500/20 text-center">
+                        <p className="font-bold text-purple-300 mb-3 text-sm">🧪 Contas de Teste:</p>
+                        <div className="space-y-2 text-xs text-purple-400 bg-slate-800/50 p-3 rounded-xl border border-purple-500/10">
+                          <p><span className="text-cyan-400 font-bold">teste@test.com</span> / 123</p>
+                          <p><span className="text-cyan-400 font-bold">vendedor@test.com</span> / 123</p>
+                          <p><span className="text-cyan-400 font-bold">comprador@test.com</span> / 123</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          // TELA INICIO
+          if (tela === 'inicio') {
+            const produtosOrdenados = [...produtos].sort((a, b) => b.dataCriacao - a.dataCriacao).filter(p => p.status === 'ativo');
+            
+            const produtosFiltrados = produtosOrdenados.filter(p => {
+              const temCategoria = filtroCategoria === 'Todos' || p.categoria === filtroCategoria;
+              const temEstado = filtroCidade === 'Todas' || p.estado === filtroCidade;
+              const temBusca = p.nome.toLowerCase().includes(busca.toLowerCase());
+              
+              let temFiltroTempo = true;
+              if (filtroTempo !== 'todos') {
+                const categoria = categorizarPorTempo(p.dataCriacao);
+                temFiltroTempo = categoria === filtroTempo;
+              }
+              
+              return temCategoria && temEstado && temBusca && temFiltroTempo;
+            });
+
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
+                {navbar}
+
+                <div className="max-w-7xl mx-auto p-6">
+                  <div className="mb-8">
+                    <h2 className="text-5xl font-black mb-3 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-lg">
+                      🛍️ Produtos Disponíveis
+                    </h2>
+                    <p className="text-purple-300 font-medium text-lg">Encontre os melhores produtos de nossa comunidade</p>
+                  </div>
+
+                  {/* FILTROS */}
+                  <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-2xl p-6 mb-8 border border-purple-500/20">
+                    <div className="mb-8">
+                      <p className="text-sm font-bold text-cyan-400 mb-4 uppercase tracking-wider">📊 Filtrar por Status</p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                        <button
+                          onClick={() => setFiltroTempo('todos')}
+                          className={`px-4 py-3 rounded-xl font-bold transition-all text-center ${
+                            filtroTempo === 'todos'
+                              ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/50 border border-cyan-400'
+                              : 'bg-slate-800/50 text-cyan-400 border border-cyan-400/30 hover:border-cyan-400 hover:bg-slate-800'
+                          }`}
+                        >
+                          <div className="text-lg mb-1">📦</div>
+                          <div className="text-xs">Todos</div>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mb-5">
+                      <input
+                        type="text"
+                        placeholder="🔍 Buscar produtos..."
+                        value={busca}
+                        onChange={(e) => setBusca(e.target.value)}
+                        className="w-full px-5 py-3.5 bg-slate-800/50 border-2 border-purple-500/30 rounded-xl focus:outline-none focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 transition-all text-white placeholder-purple-400/60 font-medium"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-bold text-cyan-400 mb-3 uppercase tracking-wider">📁 Categoria</label>
+                        <select
+                          value={filtroCategoria}
+                          onChange={(e) => setFiltroCategoria(e.target.value)}
+                          className="w-full px-4 py-2.5 bg-slate-800/50 border-2 border-purple-500/30 rounded-xl focus:outline-none focus:border-cyan-400 text-white font-medium cursor-pointer hover:border-purple-400/50 transition-all"
+                        >
+                          <option value="Todos">Todos</option>
+                          <option value="Eletrônicos">Eletrônicos</option>
+                          <option value="Moda">Moda</option>
+                          <option value="Casa">Casa</option>
+                          <option value="Viandas">Viandas</option>
+                          <option value="Outros">Outros</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-bold text-pink-400 mb-3 uppercase tracking-wider">🗺️ Estado</label>
+                        <select
+                          value={filtroCidade}
+                          onChange={(e) => setFiltroCidade(e.target.value)}
+                          className="w-full px-4 py-2.5 bg-slate-800/50 border-2 border-purple-500/30 rounded-xl focus:outline-none focus:border-pink-400 text-white font-medium cursor-pointer hover:border-purple-400/50 transition-all"
+                        >
+                          <option value="Todas">Todos os Estados</option>
+                          <option value="RS">Rio Grande do Sul</option>
+                          <option value="SP">São Paulo</option>
+                          <option value="RJ">Rio de Janeiro</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {produtosFiltrados.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p className="text-2xl text-purple-400">Nenhum produto encontrado</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {produtosFiltrados.map(p => (
+                        <div key={p.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+                          <div className="bg-gradient-to-br from-blue-400 to-blue-500 h-40 flex items-center justify-center text-6xl">
+                            {p.emoji}
+                          </div>
+
+                          <div className="p-6">
+                            <h3 className="font-bold text-lg text-gray-900 mb-2">{p.nome}</h3>
+                            <div className="flex gap-2 mb-2">
+                              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">📦 {p.categoria}</span>
+                              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">📍 {p.estado}</span>
+                            </div>
+                            <p className="text-gray-600 text-sm mb-4">Vendedor: {p.vendedorNome}</p>
+
+                            {p.eh_vianda && (
+                              <div className="mb-4 bg-orange-50 p-3 rounded-lg border-l-4 border-orange-400">
+                                <p className="text-xs font-bold text-orange-700 mb-2">📅 Disponível:</p>
+                                <div className="flex flex-wrap gap-1 mb-2">
+                                  {p.dias_semana && p.dias_semana.map(dia => (
+                                    <span key={dia} className="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded font-bold">
+                                      {dia}
+                                    </span>
+                                  ))}
+                                </div>
+                                {p.quantidade_diaria > 0 && (
+                                  <p className="text-xs text-orange-700">
+                                    📦 {p.quantidade_diaria} unidades por dia
+                                  </p>
+                                )}
+                              </div>
+                            )}
+
+                            <div className="mb-4 bg-gray-100 p-3 rounded-lg">
+                              <p className="text-2xl font-bold text-green-600">
+                                R$ {p.preco_anuncio.toLocaleString('pt-BR')}
+                              </p>
+                              <p className="text-xs text-gray-600 mt-1">
+                                👁️ {p.visualizacoes} visualizações
+                              </p>
+                            </div>
+
+                            <div className="mb-4 bg-blue-50 p-3 rounded-lg text-sm border-l-4 border-blue-300">
+                              {p.faz_entrega ? (
+                                <div className="space-y-1">
+                                  <p className="font-semibold text-blue-900">🚚 ENTREGA</p>
+                                  <p className="text-blue-800 text-xs font-bold bg-green-100 px-2 py-1 rounded">
+                                    ✅ FRETE GRÁTIS ATÉ {p.raio_entrega}KM
+                                  </p>
+                                  <p className="text-blue-800 text-xs">📍 {p.cidade_vendedor}</p>
+                                </div>
+                              ) : (
+                                <div className="space-y-1">
+                                  <p className="font-semibold text-blue-900">📍 ENTREGA</p>
+                                  <p className="text-blue-800 text-xs">├─ Retira no local</p>
+                                  <p className="text-blue-800 text-xs">└─ 📍 {p.cidade_vendedor}</p>
+                                </div>
+                              )}
+                            </div>
+
+                            <button
+                              onClick={() => abrirChat(p)}
+                              disabled={!podeNegociar(p)}
+                              className={`w-full font-bold py-3 rounded-lg transition ${
+                                podeNegociar(p)
+                                  ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white shadow-lg hover:shadow-green-500/50 border border-green-300/30 cursor-pointer'
+                                  : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-60'
+                              }`}
+                              title={!podeNegociar(p) ? motivoBloqueio(p) : 'Clique para negociar'}
+                            >
+                              {podeNegociar(p) ? '💬 Negociar' : '🔒 Bloqueado'}
+                            </button>
+
+                            {!usuarioLogado && (
+                              <p className="text-xs text-purple-400 text-center mt-3 bg-purple-500/10 p-2 rounded">
+                                Faça login para negociar
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          }
+
+          // CHAT
+          if (chatAberto) {
+            return (
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                <div className="w-full max-w-2xl bg-slate-900/95 rounded-2xl shadow-2xl flex flex-col h-[600px] border border-purple-500/30">
+                  {/* HEADER */}
+                  <div className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white p-5 flex justify-between items-center border-b border-purple-500/30">
+                    <div>
+                      <h3 className="font-bold text-lg text-cyan-400">{chatAberto.emoji} {chatAberto.nome}</h3>
+                      <p className="text-xs text-purple-300">💼 {chatAberto.vendedorNome} • 📍 {chatAberto.cidade_vendedor}</p>
+                    </div>
+                    <button onClick={fecharChat} className="hover:bg-red-500/20 p-2 rounded-lg transition text-red-400 text-2xl">
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* INFO PREÇO */}
+                  <div className="bg-purple-500/10 border-b border-purple-500/20 px-5 py-3">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-xs text-purple-300">📊 Preço Anúncio</p>
+                        <p className="text-xl font-bold text-cyan-400">R$ {chatAberto.preco_anuncio.toLocaleString('pt-BR')}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-purple-300">🔒 Preço Mínimo</p>
+                        <p className="text-xl font-bold text-green-400">R$ {chatAberto.preco_minimo.toLocaleString('pt-BR')}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-purple-300">🚚 Frete</p>
+                        <p className="text-xl font-bold text-pink-400">✅ GRÁTIS</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CHAT */}
+                  <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gradient-to-b from-slate-900 to-slate-950">
+                    {mensagens.map(m => (
+                      <div key={m.id} className={`flex ${m.tipo === 'comprador' ? 'justify-end' : 'justify-start'}`}>
+                        <div
+                          className={`max-w-xs px-4 py-3 rounded-xl text-sm font-medium whitespace-pre-wrap ${
+                            m.tipo === 'comprador'
+                              ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-br-none'
+                              : 'bg-slate-800 text-purple-300 border border-purple-500/30 rounded-bl-none'
+                          }`}
+                        >
+                          {m.texto}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* INPUT */}
+                  <div className="border-t border-purple-500/30 bg-slate-900 p-4">
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        placeholder="💰 Digite sua oferta em reais... (ex: 2500)"
+                        value={inputChat}
+                        onChange={(e) => setInputChat(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && enviarMensagem()}
+                        className="flex-1 px-4 py-3 bg-slate-800/50 border-2 border-purple-500/30 rounded-xl text-white placeholder-purple-400/60 focus:outline-none focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 transition-all font-medium"
+                      />
+                      <button
+                        onClick={enviarMensagem}
+                        className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-cyan-500/50 border border-cyan-300/30 font-bold text-xl"
+                      >
+                        ➤
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          return <div>{navbar}<div className="text-white p-4">Carregando...</div></div>;
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<Marketplace />);
+    </script>
+</body>
+</html>
