@@ -3,931 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💎 MarketHub - Marketplace Santa Rosa</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>💎 MarketHub</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html, body, #root {
-            width: 100%;
-            height: 100%;
-        }
-        body {
-            font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #2d1b4e 50%, #0f172a 100%);
-            color: #e0e7ff;
-        }
-        
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 24px;
-        }
-        
-        .navbar {
-            background: linear-gradient(to right, #1e293b, #3f1d5e);
-            border-bottom: 1px solid rgba(168, 85, 247, 0.3);
-            padding: 16px 24px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .navbar-brand {
-            font-size: 24px;
-            font-weight: 900;
-            background: linear-gradient(to right, #06b6d4, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .navbar-right {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
-        
-        .btn {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(to right, #0ea5e9, #a855f7);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            opacity: 0.9;
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
-        }
-        
-        .btn-success {
-            background: linear-gradient(to right, #10b981, #059669);
-            color: white;
-        }
-        
-        .btn-success:hover {
-            opacity: 0.9;
-        }
-        
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-        
-        .btn-secondary {
-            background: #475569;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #334155;
-        }
-        
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-        
-        .login-box {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 400px;
-            width: 100%;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-        }
-        
-        .login-title {
-            font-size: 32px;
-            font-weight: 900;
-            text-align: center;
-            background: linear-gradient(to right, #06b6d4, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-        
-        .login-subtitle {
-            text-align: center;
-            color: #c084fc;
-            margin-bottom: 32px;
-        }
-        
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 12px;
-            font-weight: bold;
-            color: #06b6d4;
-            margin-bottom: 8px;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            background: #1e293b;
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 8px;
-            color: white;
-            font-family: inherit;
-            font-size: 14px;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #06b6d4;
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
-        }
-        
-        .form-input::placeholder {
-            color: #a78bfa;
-        }
-        
-        .info-box {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 24px;
-            font-size: 12px;
-            color: #93c5fd;
-        }
-        
-        .info-box-title {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #60a5fa;
-        }
-        
-        .success-box {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 24px;
-            font-size: 12px;
-            color: #6ee7b7;
-        }
-        
-        .success-box-title {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #10b981;
-        }
-        
-        .banner {
-            background: linear-gradient(to right, rgba(168, 85, 247, 0.2), rgba(6, 182, 212, 0.2));
-            border: 2px solid #a855f7;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 32px;
-            display: flex;
-            gap: 16px;
-        }
-        
-        .banner-icon {
-            font-size: 32px;
-            flex-shrink: 0;
-        }
-        
-        .banner-content h3 {
-            font-size: 20px;
-            font-weight: 900;
-            color: #22d3ee;
-            margin-bottom: 8px;
-        }
-        
-        .banner-content p {
-            color: #c084fc;
-            margin-bottom: 12px;
-            font-size: 14px;
-        }
-        
-        .banner-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            font-size: 12px;
-            color: #ddd6fe;
-        }
-        
-        .page-title {
-            font-size: 32px;
-            font-weight: 900;
-            margin-bottom: 32px;
-            background: linear-gradient(to right, #06b6d4, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-        }
-        
-        .search-box {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 8px;
-            color: white;
-            font-family: inherit;
-            margin-bottom: 24px;
-        }
-        
-        .search-box::placeholder {
-            color: #a78bfa;
-        }
-        
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-        
-        .product-card {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 12px;
-            padding: 24px;
-            transition: all 0.3s;
-        }
-        
-        .product-card:hover {
-            border-color: rgba(168, 85, 247, 0.6);
-            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.1);
-        }
-        
-        .product-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-        
-        .product-badge {
-            font-size: 11px;
-            background: #10b981;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .product-name {
-            font-weight: bold;
-            color: #06b6d4;
-            margin-bottom: 8px;
-        }
-        
-        .product-price {
-            background: #1e293b;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-        
-        .product-price-original {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 4px;
-        }
-        
-        .product-price-main {
-            font-size: 24px;
-            font-weight: bold;
-            color: #10b981;
-        }
-        
-        .product-price-reduction {
-            font-size: 11px;
-            color: #22d3ee;
-            margin-top: 4px;
-        }
-        
-        .product-info {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 12px;
-        }
-        
-        .product-info div {
-            margin-bottom: 4px;
-        }
-        
-        .vianda-box {
-            background: rgba(251, 146, 60, 0.1);
-            border: 1px solid rgba(251, 146, 60, 0.3);
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            font-size: 12px;
-        }
-        
-        .vianda-title {
-            font-weight: bold;
-            color: #fb923c;
-            margin-bottom: 4px;
-        }
-        
-        .vianda-days {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-bottom: 4px;
-        }
-        
-        .vianda-day {
-            font-size: 10px;
-            background: rgba(251, 146, 60, 0.3);
-            color: #fed7aa;
-            padding: 2px 6px;
-            border-radius: 3px;
-        }
-        
-        .vianda-quantity {
-            color: #fed7aa;
-        }
-        
-        .product-buttons {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .product-buttons button {
-            flex: 1;
-            padding: 8px;
-            font-size: 12px;
-        }
-        
-        .back-link {
-            color: #06b6d4;
-            text-decoration: none;
-            font-weight: bold;
-            margin-bottom: 24px;
-            display: inline-block;
-            cursor: pointer;
-        }
-        
-        .back-link:hover {
-            color: #22d3ee;
-        }
-        
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        
-        .modal-content {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 12px;
-            padding: 32px;
-            max-width: 500px;
-            width: 90%;
-        }
-        
-        .modal-title {
-            font-size: 24px;
-            font-weight: 900;
-            color: #06b6d4;
-            margin-bottom: 16px;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-        
-        .modal-buttons button {
-            flex: 1;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .navbar { background: #333; color: white; padding: 15px; text-align: center; margin-bottom: 20px; }
+        .navbar span { float: right; }
+        .navbar button { background: #d32f2f; color: white; border: none; padding: 8px 16px; cursor: pointer; border-radius: 4px; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .btn-primary { background: #1976d2; color: white; width: 100%; }
+        .btn-danger { background: #d32f2f; color: white; margin-right: 5px; }
+        .btn-secondary { background: #666; color: white; }
+        .login-box { max-width: 400px; margin: 100px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .login-box h1 { text-align: center; margin-bottom: 30px; color: #333; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .product-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .product-emoji { font-size: 40px; margin-bottom: 10px; }
+        .product-name { font-weight: bold; margin-bottom: 10px; font-size: 16px; }
+        .product-price { font-size: 20px; color: #2e7d32; font-weight: bold; margin-bottom: 10px; }
+        .product-info { font-size: 12px; color: #666; margin-bottom: 15px; }
+        .product-buttons { display: flex; gap: 5px; }
+        .product-buttons button { flex: 1; padding: 8px; font-size: 12px; }
+        .page-title { font-size: 28px; margin-bottom: 20px; color: #333; }
+        .back-link { color: #1976d2; cursor: pointer; margin-bottom: 20px; display: inline-block; }
+        .info-box { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 15px; margin-top: 20px; border-radius: 4px; }
+        .search-box { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-    
-    <script type="text/babel">
-        const { useState } = React;
+    <div id="app"></div>
 
-        function MarketHub() {
-            const [tela, setTela] = useState('login');
-            const [usuarioLogado, setUsuarioLogado] = useState(null);
-            const [loginEmail, setLoginEmail] = useState('teste@test.com');
-            const [loginSenha, setLoginSenha] = useState('123');
-            const [busca, setBusca] = useState('');
-            const [produtoEditando, setProdutoEditando] = useState(null);
-            const [novoNome, setNovoNome] = useState('');
+    <script>
+        const app = document.getElementById('app');
+        
+        let estado = {
+            tela: 'login',
+            usuario: null,
+            email: 'teste@test.com',
+            senha: '123',
+            busca: '',
+            produtos: [
+                { id: 1, nome: '🍽️ Marmita', preco: 45, preco_min: 35, vendedor: '🧪 Teste', views: 23, eh_vianda: true, dias: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'], qty: 15 },
+                { id: 2, nome: '📱 Smartphone', preco: 1200, preco_min: 800, vendedor: '🧪 Teste', views: 156, eh_vianda: false, dias: [], qty: 0 },
+                { id: 3, nome: '👕 Camiseta', preco: 89, preco_min: 45, vendedor: '🧪 Teste', views: 89, eh_vianda: false, dias: [], qty: 0, reducao: 10 },
+                { id: 4, nome: '💡 Luminária', preco: 150, preco_min: 100, vendedor: '🧪 Teste', views: 34, eh_vianda: false, dias: [], qty: 0 },
+                { id: 5, nome: '⚽ Bola', preco: 120, preco_min: 80, vendedor: '🧪 Teste', views: 67, eh_vianda: false, dias: [], qty: 0, reducao: 5 }
+            ]
+        };
 
-            const usuarios = {
-                'teste@test.com': { 
-                    id: 'teste123', 
-                    nome: '🧪 Teste Completo', 
-                    email: 'teste@test.com', 
-                    senha: '123', 
-                    cidade: 'Santa Rosa'
-                }
-            };
+        const usuarios = { 'teste@test.com': { nome: '🧪 Teste Completo', email: 'teste@test.com', senha: '123' } };
 
-            const [produtos, setProdutos] = useState([
-                {
-                    id: 1001,
-                    nome: '🍽️ Marmita Teste',
-                    preco_anuncio: 45,
-                    preco_minimo: 35,
-                    emoji: '🍽️',
-                    categoria: 'Viandas',
-                    vendedorId: 'teste123',
-                    vendedorNome: '🧪 Teste Completo',
-                    aceita_reducao_automatica: true,
-                    data_publicacao: new Date().getTime(),
-                    eh_vianda: true,
-                    dias_semana: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
-                    quantidade_diaria: 15,
-                    dataCriacao: new Date().getTime(),
-                    visualizacoes: 23,
-                    em_negociacao: 1,
-                    status: 'ativo'
-                },
-                {
-                    id: 1002,
-                    nome: '📱 Smartphone Teste',
-                    preco_anuncio: 1200,
-                    preco_minimo: 800,
-                    emoji: '📱',
-                    categoria: 'Eletrônicos',
-                    vendedorId: 'teste123',
-                    vendedorNome: '🧪 Teste Completo',
-                    aceita_reducao_automatica: false,
-                    data_publicacao: new Date().getTime(),
-                    eh_vianda: false,
-                    dias_semana: [],
-                    quantidade_diaria: 0,
-                    dataCriacao: new Date().getTime(),
-                    visualizacoes: 156,
-                    em_negociacao: 5,
-                    status: 'ativo'
-                },
-                {
-                    id: 1003,
-                    nome: '👕 Camiseta Teste',
-                    preco_anuncio: 89,
-                    preco_minimo: 45,
-                    emoji: '👕',
-                    categoria: 'Moda',
-                    vendedorId: 'teste123',
-                    vendedorNome: '🧪 Teste Completo',
-                    aceita_reducao_automatica: true,
-                    data_publicacao: new Date(new Date().getTime() - 10 * 24 * 60 * 60 * 1000).getTime(),
-                    eh_vianda: false,
-                    dias_semana: [],
-                    quantidade_diaria: 0,
-                    dataCriacao: new Date(new Date().getTime() - 10 * 24 * 60 * 60 * 1000).getTime(),
-                    visualizacoes: 89,
-                    em_negociacao: 3,
-                    status: 'ativo'
-                },
-                {
-                    id: 1004,
-                    nome: '💡 Luminária Teste',
-                    preco_anuncio: 150,
-                    preco_minimo: 100,
-                    emoji: '💡',
-                    categoria: 'Casa',
-                    vendedorId: 'teste123',
-                    vendedorNome: '🧪 Teste Completo',
-                    aceita_reducao_automatica: false,
-                    data_publicacao: new Date().getTime(),
-                    eh_vianda: false,
-                    dias_semana: [],
-                    quantidade_diaria: 0,
-                    dataCriacao: new Date().getTime(),
-                    visualizacoes: 34,
-                    em_negociacao: 0,
-                    status: 'ativo'
-                },
-                {
-                    id: 1005,
-                    nome: '⚽ Bola Teste',
-                    preco_anuncio: 120,
-                    preco_minimo: 80,
-                    emoji: '⚽',
-                    categoria: 'Esportes',
-                    vendedorId: 'teste123',
-                    vendedorNome: '🧪 Teste Completo',
-                    aceita_reducao_automatica: true,
-                    data_publicacao: new Date(new Date().getTime() - 5 * 24 * 60 * 60 * 1000).getTime(),
-                    eh_vianda: false,
-                    dias_semana: [],
-                    quantidade_diaria: 0,
-                    dataCriacao: new Date(new Date().getTime() - 5 * 24 * 60 * 60 * 1000).getTime(),
-                    visualizacoes: 67,
-                    em_negociacao: 2,
-                    status: 'ativo'
-                }
-            ]);
-
-            const calcularPrecoComReducao = (produto) => {
-                if (!produto.aceita_reducao_automatica) {
-                    return {
-                        preco_anuncio_atual: produto.preco_anuncio,
-                        preco_minimo_atual: produto.preco_minimo,
-                        dias_reducao: 0
-                    };
-                }
-
-                const dataPublicacao = produto.data_publicacao || produto.dataCriacao;
-                if (!dataPublicacao) {
-                    return {
-                        preco_anuncio_atual: produto.preco_anuncio,
-                        preco_minimo_atual: produto.preco_minimo,
-                        dias_reducao: 0
-                    };
-                }
-
-                const agora = new Date().getTime();
-                const publicacao = typeof dataPublicacao === 'string' ? new Date(dataPublicacao).getTime() : dataPublicacao;
-                const diasPublicado = Math.floor((agora - publicacao) / (1000 * 60 * 60 * 24));
-                
-                const percentualReducao = diasPublicado * 1;
-                const preco_anuncio_atual = Math.floor(produto.preco_anuncio * (1 - percentualReducao / 100));
-                const preco_minimo_atual = Math.floor(produto.preco_minimo * (1 - percentualReducao / 100));
-
-                return {
-                    preco_anuncio_atual: Math.max(preco_anuncio_atual, 0),
-                    preco_minimo_atual: Math.max(preco_minimo_atual, 0),
-                    dias_reducao: diasPublicado
-                };
-            };
-
-            const fazerLogin = () => {
-                const user = usuarios[loginEmail];
-                if (user && user.senha === loginSenha) {
-                    setUsuarioLogado(user);
-                    setTela('inicio');
-                } else {
-                    alert('Email ou senha incorretos!\n\nTente:\nEmail: teste@test.com\nSenha: 123');
-                }
-            };
-
-            const sairLogin = () => {
-                setUsuarioLogado(null);
-                setTela('login');
-            };
-
-            const deletarProduto = (id) => {
-                if (confirm('Deseja deletar este produto?')) {
-                    setProdutos(produtos.filter(p => p.id !== id));
-                    alert('✅ Produto deletado!');
-                }
-            };
-
-            const editarProduto = (produto) => {
-                setProdutoEditando(produto);
-                setNovoNome(produto.nome);
-            };
-
-            const salvarEdicao = () => {
-                if (!novoNome.trim()) {
-                    alert('Nome não pode estar vazio!');
-                    return;
-                }
-                setProdutos(produtos.map(p => 
-                    p.id === produtoEditando.id ? { ...p, nome: novoNome } : p
-                ));
-                setProdutoEditando(null);
-                alert('✅ Produto atualizado!');
-            };
-
-            if (!usuarioLogado) {
-                return (
-                    <div className="login-container">
-                        <div className="login-box">
-                            <div className="login-title">💎 MarketHub</div>
-                            <div className="login-subtitle">Marketplace Santa Rosa/RS</div>
-
-                            <div className="form-group">
-                                <label className="form-label">📧 Email</label>
-                                <input
-                                    type="email"
-                                    value={loginEmail}
-                                    onChange={(e) => setLoginEmail(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && fazerLogin()}
-                                    className="form-input"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label className="form-label">🔐 Senha</label>
-                                <input
-                                    type="password"
-                                    value={loginSenha}
-                                    onChange={(e) => setLoginSenha(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && fazerLogin()}
-                                    className="form-input"
-                                />
-                            </div>
-
-                            <button onClick={fazerLogin} className="btn btn-primary" style={{width: '100%', marginBottom: '16px'}}>
-                                🚀 Entrar
-                            </button>
-
-                            <div className="info-box">
-                                <div className="info-box-title">🧪 CONTA DE TESTE:</div>
-                                <div>Email: <strong>teste@test.com</strong></div>
-                                <div>Senha: <strong>123</strong></div>
-                            </div>
-
-                            <div className="success-box">
-                                <div className="success-box-title">✅ O que você pode fazer:</div>
-                                <div>✓ Ver 5 produtos de exemplo</div>
-                                <div>✓ Testar redução 1% ao dia</div>
-                                <div>✓ Testar viandas com calendário</div>
-                                <div>✓ Editar e deletar produtos</div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            const navbar = (
-                <div className="navbar">
-                    <div className="navbar-brand">💎 MarketHub</div>
-                    <div className="navbar-right">
-                        <span style={{color: '#06b6d4', fontWeight: 'bold', fontSize: '14px'}}>
-                            👤 {usuarioLogado.nome}
-                        </span>
-                        <button onClick={sairLogin} className="btn btn-danger" style={{padding: '8px 16px', fontSize: '12px'}}>
-                            Sair
-                        </button>
-                    </div>
-                </div>
-            );
-
-            if (tela === 'inicio') {
-                const produtosFiltrados = produtos.filter(p => 
-                    p.nome.toLowerCase().includes(busca.toLowerCase()) && p.status === 'ativo'
-                );
-
-                return (
-                    <div>
-                        {navbar}
-                        <div className="container">
-                            <div className="banner">
-                                <div className="banner-icon">🧪</div>
-                                <div className="banner-content">
-                                    <h3>Bem-vindo ao MarketHub!</h3>
-                                    <p>Plataforma de marketplace com sistema inteligente de negociação e redução de preços.</p>
-                                    <div className="banner-grid">
-                                        <div>✅ Redução 1% ao dia</div>
-                                        <div>✅ Viandas/Calendário</div>
-                                        <div>✅ Chat de negociação</div>
-                                        <div>✅ Frete inteligente</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="button-group">
-                                <button onClick={() => setTela('meus-produtos')} className="btn btn-primary" style={{width: '100%'}}>
-                                    📦 Meus Produtos
-                                </button>
-                            </div>
-
-                            <div className="page-title">🛍️ Produtos na Vitrine</div>
-
-                            <input
-                                type="text"
-                                placeholder="🔍 Buscar produtos..."
-                                value={busca}
-                                onChange={(e) => setBusca(e.target.value)}
-                                className="search-box"
-                            />
-
-                            <div className="product-grid">
-                                {produtosFiltrados.length > 0 ? produtosFiltrados.map(p => {
-                                    const precoAtual = calcularPrecoComReducao(p);
-                                    return (
-                                        <div key={p.id} className="product-card">
-                                            <div className="product-icon">
-                                                <span style={{fontSize: '40px'}}>{p.emoji}</span>
-                                                {p.aceita_reducao_automatica && (
-                                                    <span className="product-badge">📉 Reduzindo</span>
-                                                )}
-                                            </div>
-                                            
-                                            <div className="product-name">{p.nome}</div>
-                                            
-                                            <div className="product-price">
-                                                {p.aceita_reducao_automatica ? (
-                                                    <>
-                                                        <div className="product-price-original">Original: R$ {p.preco_anuncio}</div>
-                                                        <div className="product-price-main">R$ {precoAtual.preco_anuncio_atual}</div>
-                                                        <div className="product-price-reduction">
-                                                            📉 Dia {precoAtual.dias_reducao + 1}
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <div className="product-price-main">R$ {p.preco_anuncio}</div>
-                                                )}
-                                            </div>
-
-                                            {p.eh_vianda && (
-                                                <div className="vianda-box">
-                                                    <div className="vianda-title">📅 Disponível:</div>
-                                                    <div className="vianda-days">
-                                                        {p.dias_semana.map(dia => (
-                                                            <span key={dia} className="vianda-day">{dia}</span>
-                                                        ))}
-                                                    </div>
-                                                    <div className="vianda-quantity">📦 {p.quantidade_diaria}/dia</div>
-                                                </div>
-                                            )}
-
-                                            <div className="product-info">
-                                                <div>👁️ {p.visualizacoes} visualizações</div>
-                                                <div>💬 {p.em_negociacao} em negociação</div>
-                                                <div>👤 {p.vendedorNome}</div>
-                                            </div>
-
-                                            <button 
-                                                onClick={() => alert('💬 Sistema de negociação em desenvolvimento!')}
-                                                className="btn btn-secondary" style={{width: '100%', marginTop: '12px'}}
-                                            >
-                                                💬 Negociar
-                                            </button>
-                                        </div>
-                                    );
-                                }) : (
-                                    <div style={{gridColumn: '1 / -1', textAlign: 'center', padding: '48px 0', color: '#c084fc'}}>
-                                        Nenhum produto encontrado.
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (tela === 'meus-produtos') {
-                const meusProdutos = produtos.filter(p => p.vendedorId === usuarioLogado.id);
-
-                return (
-                    <div>
-                        {navbar}
-                        <div className="container">
-                            <span onClick={() => setTela('inicio')} className="back-link">← Voltar</span>
-
-                            <div className="page-title">📦 Meus Produtos ({meusProdutos.length})</div>
-
-                            <div className="product-grid">
-                                {meusProdutos.length > 0 ? meusProdutos.map(p => {
-                                    const precoAtual = calcularPrecoComReducao(p);
-                                    return (
-                                        <div key={p.id} className="product-card">
-                                            <div style={{fontSize: '40px', marginBottom: '12px'}}>{p.emoji}</div>
-                                            <div className="product-name">{p.nome}</div>
-
-                                            <div className="product-price" style={{marginBottom: '12px'}}>
-                                                {p.aceita_reducao_automatica ? (
-                                                    <>
-                                                        <div className="product-price-original">Original: R$ {p.preco_anuncio}</div>
-                                                        <div className="product-price-main">R$ {precoAtual.preco_anuncio_atual}</div>
-                                                        <div className="product-price-reduction">✅ Redução: -{precoAtual.dias_reducao}%</div>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <div>Anúncio: R$ {p.preco_anuncio}</div>
-                                                        <div>Mínimo: R$ {p.preco_minimo}</div>
-                                                    </>
-                                                )}
-                                            </div>
-
-                                            {p.eh_vianda && (
-                                                <div className="vianda-box">
-                                                    <div className="vianda-title">🍽️ VIANDA RECORRENTE</div>
-                                                    <div className="vianda-quantity">📅 {p.dias_semana.join(', ')}</div>
-                                                    <div className="vianda-quantity">📦 {p.quantidade_diaria} unidades/dia</div>
-                                                </div>
-                                            )}
-
-                                            <div className="product-info" style={{marginBottom: '12px'}}>
-                                                <div>👁️ {p.visualizacoes} visualizações</div>
-                                                <div>💬 {p.em_negociacao} em negociação</div>
-                                            </div>
-
-                                            <div className="product-buttons">
-                                                <button 
-                                                    onClick={() => editarProduto(p)}
-                                                    className="btn btn-primary"
-                                                >
-                                                    ✏️ Editar
-                                                </button>
-                                                <button 
-                                                    onClick={() => deletarProduto(p.id)}
-                                                    className="btn btn-danger"
-                                                >
-                                                    🗑️ Deletar
-                                                </button>
-                                            </div>
-                                        </div>
-                                    );
-                                }) : (
-                                    <div style={{gridColumn: '1 / -1', textAlign: 'center', padding: '48px 0', color: '#c084fc'}}>
-                                        Você não tem produtos publicados.
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {produtoEditando && (
-                            <div className="modal" onClick={() => setProdutoEditando(null)}>
-                                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                                    <div className="modal-title">✏️ Editar Produto</div>
-                                    
-                                    <div className="form-group">
-                                        <label className="form-label">Nome do Produto</label>
-                                        <input
-                                            type="text"
-                                            value={novoNome}
-                                            onChange={(e) => setNovoNome(e.target.value)}
-                                            className="form-input"
-                                        />
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label className="form-label">Preço: R$ {produtoEditando.preco_anuncio}</label>
-                                        <label className="form-label">Mínimo: R$ {produtoEditando.preco_minimo}</label>
-                                    </div>
-
-                                    <div className="modal-buttons">
-                                        <button onClick={salvarEdicao} className="btn btn-success">
-                                            💾 Salvar
-                                        </button>
-                                        <button onClick={() => setProdutoEditando(null)} className="btn btn-secondary">
-                                            ❌ Cancelar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                );
-            }
-
-            return null;
+        function renderizar() {
+            if (estado.tela === 'login') renderLogin();
+            else if (estado.tela === 'inicio') renderInicio();
+            else if (estado.tela === 'meus-produtos') renderMeusProdutos();
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<MarketHub />);
+        function renderLogin() {
+            app.innerHTML = `
+                <div class="login-box">
+                    <h1>💎 MarketHub</h1>
+                    <p style="text-align:center;margin-bottom:20px;">Marketplace Santa Rosa</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="email" class="form-input" value="${estado.email}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Senha</label>
+                        <input type="password" id="senha" class="form-input" value="${estado.senha}">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="fazerLogin()">🚀 Entrar</button>
+                    
+                    <div class="info-box">
+                        <strong>🧪 TESTE:</strong><br>
+                        Email: teste@test.com<br>
+                        Senha: 123
+                    </div>
+                </div>
+            `;
+            document.getElementById('email').addEventListener('change', (e) => { estado.email = e.target.value; });
+            document.getElementById('senha').addEventListener('change', (e) => { estado.senha = e.target.value; });
+        }
+
+        function fazerLogin() {
+            const u = usuarios[estado.email];
+            if (u && u.senha === estado.senha) {
+                estado.usuario = u;
+                estado.tela = 'inicio';
+                renderizar();
+            } else {
+                alert('Credenciais incorretas!');
+            }
+        }
+
+        function sair() {
+            estado.usuario = null;
+            estado.tela = 'login';
+            renderizar();
+        }
+
+        function renderInicio() {
+            const filtrados = estado.produtos.filter(p => p.nome.toLowerCase().includes(estado.busca.toLowerCase()));
+
+            let html = `
+                <div class="navbar">
+                    <h2>💎 MarketHub</h2>
+                    <span>👤 ${estado.usuario.nome} <button onclick="sair()">Sair</button></span>
+                </div>
+
+                <div class="container">
+                    <button class="btn btn-primary" style="margin-bottom:20px;" onclick="irMeusProdutos()">📦 Meus Produtos</button>
+                    
+                    <h1 class="page-title">🛍️ Produtos</h1>
+                    
+                    <input type="text" class="search-box" id="busca" placeholder="🔍 Buscar...">
+                    
+                    <div class="product-grid">
+            `;
+
+            filtrados.forEach(p => {
+                html += `
+                    <div class="product-card">
+                        <div class="product-emoji">${p.nome.split(' ')[0]}</div>
+                        <div class="product-name">${p.nome}</div>
+                        <div class="product-price">R$ ${p.preco}${p.reducao ? ' (-' + p.reducao + '%)' : ''}</div>
+                        <div class="product-info">
+                            👁️ ${p.views} visualizações<br>
+                            👤 ${p.vendedor}
+                            ${p.eh_vianda ? '<br>📅 ' + p.dias.join(', ') + ' | ' + p.qty + '/dia' : ''}
+                        </div>
+                        <button class="btn btn-secondary" style="width:100%;">💬 Negociar</button>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            app.innerHTML = html;
+            document.getElementById('busca').addEventListener('input', (e) => {
+                estado.busca = e.target.value;
+                renderizar();
+            });
+        }
+
+        function irMeusProdutos() {
+            estado.tela = 'meus-produtos';
+            renderizar();
+        }
+
+        function renderMeusProdutos() {
+            let html = `
+                <div class="navbar">
+                    <h2>💎 MarketHub</h2>
+                    <span>👤 ${estado.usuario.nome} <button onclick="sair()">Sair</button></span>
+                </div>
+
+                <div class="container">
+                    <span class="back-link" onclick="irInicio()">← Voltar</span>
+                    <h1 class="page-title">📦 Meus Produtos</h1>
+                    <div class="product-grid">
+            `;
+
+            estado.produtos.forEach(p => {
+                html += `
+                    <div class="product-card">
+                        <div class="product-emoji">${p.nome.split(' ')[0]}</div>
+                        <div class="product-name">${p.nome}</div>
+                        <div class="product-price">R$ ${p.preco_min}</div>
+                        <div class="product-info">👁️ ${p.views}</div>
+                        <div class="product-buttons">
+                            <button class="btn btn-primary" onclick="alert('Editar')">✏️</button>
+                            <button class="btn btn-danger" onclick="deletar(${p.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            app.innerHTML = html;
+        }
+
+        function irInicio() { estado.tela = 'inicio'; renderizar(); }
+        function deletar(id) {
+            if (confirm('Deletar?')) {
+                estado.produtos = estado.produtos.filter(p => p.id !== id);
+                renderMeusProdutos();
+            }
+        }
+
+        renderizar();
     </script>
 </body>
 </html>
