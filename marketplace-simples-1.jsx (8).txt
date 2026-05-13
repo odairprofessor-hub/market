@@ -1,0 +1,410 @@
+import React, { useState } from 'react';
+import { Send, X } from 'lucide-react';
+
+const Marketplace = () => {
+  const [tela, setTela] = useState('login');
+  const [usuario, setUsuario] = useState(null);
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [nome, setNome] = useState('');
+  const [tipo, setTipo] = useState('comprador');
+
+  const usuarios = {
+    'vendedor@test.com': { id: 'v1', nome: 'João Vendedor', tipo: 'vendedor', senha: '123' },
+    'comprador@test.com': { id: 'c1', nome: 'Maria Compradora', tipo: 'comprador', senha: '123' }
+  };
+
+  const [produtos, setProdutos] = useState([
+    { id: 1, nome: 'iPhone 13', preco: 2500, minimo: 2000, emoji: '📱', vendedor: 'João' },
+    { id: 2, nome: 'MacBook', preco: 5000, minimo: 4000, emoji: '💻', vendedor: 'João' }
+  ]);
+
+  const [novoNome, setNovoNome] = useState('');
+  const [novoPreco, setNovoPreco] = useState('');
+  const [novoMinimo, setNovoMinimo] = useState('');
+  const [chatAberto, setChatAberto] = useState(null);
+  const [mensagens, setMensagens] = useState([]);
+  const [msg, setMsg] = useState('');
+
+  // LOGIN
+  const fazerLogin = () => {
+    const user = usuarios[email];
+    if (user && user.senha === senha) {
+      setUsuario(user);
+      setTela(user.tipo === 'vendedor' ? 'vendedor' : 'comprador');
+      setEmail('');
+      setSenha('');
+    } else {
+      alert('Email ou senha incorretos');
+    }
+  };
+
+  const fazerCadastro = () => {
+    if (!email || !nome || !senha) {
+      alert('Preencha todos os campos');
+      return;
+    }
+    setUsuario({ id: Date.now(), nome, tipo, email, senha });
+    setTela(tipo === 'vendedor' ? 'vendedor' : 'comprador');
+    setEmail('');
+    setNome('');
+    setSenha('');
+  };
+
+  const sair = () => {
+    setUsuario(null);
+    setTela('login');
+    setEmail('');
+    setSenha('');
+    setNome('');
+  };
+
+  // PRODUTOS
+  const adicionarProduto = () => {
+    if (!novoNome || !novoPreco || !novoMinimo) {
+      alert('Preencha todos os campos');
+      return;
+    }
+    setProdutos([...produtos, {
+      id: Date.now(),
+      nome: novoNome,
+      preco: parseInt(novoPreco),
+      minimo: parseInt(novoMinimo),
+      emoji: '📦',
+      vendedor: usuario.nome
+    }]);
+    setNovoNome('');
+    setNovoPreco('');
+    setNovoMinimo('');
+    alert('Produto adicionado!');
+  };
+
+  // CHAT
+  const abrirChat = (produto) => {
+    setChatAberto(produto);
+    setMensagens([
+      { id: 1, tipo: 'bot', texto: `Oi! Tenho interesse em "${produto.nome}". Qual é o menor preço?` }
+    ]);
+  };
+
+  const enviarMsg = () => {
+    if (!msg.trim()) return;
+
+    setMensagens([...mensagens, { id: Date.now(), tipo: 'comprador', texto: msg }]);
+
+    setTimeout(() => {
+      let resposta = '';
+      if (msg.toLowerCase().includes('compro')) {
+        resposta = `🎉 Ótimo! Vou preparar tudo. Quando você vem buscar?`;
+      } else if (!isNaN(msg)) {
+        const oferta = parseInt(msg);
+        if (oferta < chatAberto.minimo) {
+          resposta = `Meu preço mínimo é R$ ${chatAberto.minimo}. Aceita?`;
+        } else if (oferta < chatAberto.preco) {
+          resposta = `Posso fazer R$ ${oferta + 100}. Topa?`;
+        } else {
+          resposta = `Ótimo! Vou anotar sua oferta.`;
+        }
+      } else {
+        resposta = `Qual é sua melhor proposta? Estou aberto a negociar!`;
+      }
+
+      setMensagens(prev => [...prev, { id: Date.now() + 1, tipo: 'vendedor', texto: resposta }]);
+    }, 800);
+
+    setMsg('');
+  };
+
+  // ============ TELAS ============
+
+  if (tela === 'login') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md">
+          <h1 className="text-3xl font-bold text-center mb-8">🏪 MarketHub</h1>
+
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            type="password"
+            placeholder="Senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && fazerLogin()}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <button
+            onClick={fazerLogin}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-4 transition"
+          >
+            Entrar
+          </button>
+
+          <button
+            onClick={() => setTela('cadastro')}
+            className="w-full bg-gray-300 hover:bg-gray-400 text-gray-900 font-bold py-3 rounded-lg transition"
+          >
+            Criar Conta
+          </button>
+
+          <div className="mt-6 pt-6 border-t border-gray-300 text-xs text-gray-600 text-center">
+            <p className="font-bold mb-2">Contas de teste:</p>
+            <p>vendedor@test.com / 123</p>
+            <p>comprador@test.com / 123</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (tela === 'cadastro') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md">
+          <h1 className="text-3xl font-bold text-center mb-8">Cadastrar</h1>
+
+          <input
+            type="text"
+            placeholder="Nome completo"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            type="password"
+            placeholder="Senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <select
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="comprador">Sou Comprador</option>
+            <option value="vendedor">Sou Vendedor</option>
+          </select>
+
+          <button
+            onClick={fazerCadastro}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mb-4 transition"
+          >
+            Cadastrar
+          </button>
+
+          <button
+            onClick={() => setTela('login')}
+            className="w-full bg-gray-300 hover:bg-gray-400 text-gray-900 font-bold py-3 rounded-lg transition"
+          >
+            Voltar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // PAINEL VENDEDOR
+  if (tela === 'vendedor') {
+    const meusProductos = produtos.filter(p => p.vendedor === usuario.nome);
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <nav className="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-4 flex justify-between items-center shadow-lg">
+          <h1 className="text-2xl font-bold">🏪 MarketHub</h1>
+          <div className="flex items-center gap-4">
+            <span>👤 {usuario.nome}</span>
+            <button onClick={sair} className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
+              Sair
+            </button>
+          </div>
+        </nav>
+
+        <div className="max-w-6xl mx-auto p-6">
+          <button
+            onClick={() => setTela('novo-produto')}
+            className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-lg mb-6 transition"
+          >
+            ➕ Novo Produto
+          </button>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {meusProductos.map(p => (
+              <div key={p.id} className="bg-white rounded-lg shadow-lg p-4">
+                <div className="text-5xl mb-3">{p.emoji}</div>
+                <h3 className="font-bold text-lg mb-2">{p.nome}</h3>
+                <p className="text-xl text-blue-600 font-bold mb-1">R$ {p.preco}</p>
+                <p className="text-sm text-gray-600 mb-3">Mínimo: R$ {p.minimo}</p>
+                <button
+                  onClick={() => setProdutos(produtos.filter(x => x.id !== p.id))}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg transition"
+                >
+                  Remover
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // NOVO PRODUTO
+  if (tela === 'novo-produto') {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <nav className="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-4">
+          <h1 className="text-2xl font-bold">🏪 MarketHub</h1>
+        </nav>
+
+        <div className="max-w-2xl mx-auto p-6">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-2xl font-bold mb-6">Novo Produto</h2>
+            <input
+              type="text"
+              placeholder="Nome do produto"
+              value={novoNome}
+              onChange={(e) => setNovoNome(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="number"
+              placeholder="Preço (R$)"
+              value={novoPreco}
+              onChange={(e) => setNovoPreco(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="number"
+              placeholder="Preço Mínimo (R$)"
+              value={novoMinimo}
+              onChange={(e) => setNovoMinimo(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            <div className="flex gap-4">
+              <button
+                onClick={adicionarProduto}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition"
+              >
+                Publicar
+              </button>
+              <button
+                onClick={() => setTela('vendedor')}
+                className="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg transition"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // PAINEL COMPRADOR
+  if (tela === 'comprador') {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <nav className="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-4 flex justify-between items-center shadow-lg">
+          <h1 className="text-2xl font-bold">🏪 MarketHub</h1>
+          <div className="flex items-center gap-4">
+            <span>👤 {usuario.nome}</span>
+            <button onClick={sair} className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
+              Sair
+            </button>
+          </div>
+        </nav>
+
+        <div className="max-w-6xl mx-auto p-6">
+          <h2 className="text-2xl font-bold mb-6">🛍️ Produtos à Venda</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {produtos.map(p => (
+              <div key={p.id} className="bg-white rounded-lg shadow-lg p-4">
+                <div className="text-5xl mb-3">{p.emoji}</div>
+                <h3 className="font-bold text-lg mb-2">{p.nome}</h3>
+                <p className="text-gray-600 text-sm mb-3">Vendedor: {p.vendedor}</p>
+                <p className="text-xl text-blue-600 font-bold mb-1">R$ {p.preco}</p>
+                <p className="text-sm text-gray-600 mb-4">Negocie até R$ {p.minimo}</p>
+                <button
+                  onClick={() => abrirChat(p)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition"
+                >
+                  💬 Negociar
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // CHAT
+  if (chatAberto) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-2xl flex flex-col h-96">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-4 flex justify-between items-center">
+            <div>
+              <h3 className="font-bold">{chatAberto.nome}</h3>
+              <p className="text-sm">R$ {chatAberto.preco}</p>
+            </div>
+            <button onClick={() => setChatAberto(null)} className="hover:bg-white/20 p-2 rounded-lg">
+              <X size={24} />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            {mensagens.map(m => (
+              <div key={m.id} className={`flex ${m.tipo === 'comprador' ? 'justify-end' : 'justify-start'}`}>
+                <div
+                  className={`max-w-xs px-4 py-2 rounded-lg ${
+                    m.tipo === 'comprador'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-300 text-gray-900'
+                  }`}
+                >
+                  {m.texto}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="border-t p-4 flex gap-2">
+            <input
+              type="text"
+              placeholder="Mensagem ou preço..."
+              value={msg}
+              onChange={(e) => setMsg(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && enviarMsg()}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={enviarMsg}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+            >
+              <Send size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+};
+
+export default Marketplace;

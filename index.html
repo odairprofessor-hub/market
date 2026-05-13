@@ -6,7 +6,6 @@
     <title>💎 MarketHub - Marketplace Santa Rosa</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -17,28 +16,38 @@
         }
         body {
             font-family: 'Poppins', 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f2744 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #2d1b4e 50%, #0f172a 100%);
             color: #e0e7ff;
         }
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         #root {
             min-height: 100vh;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .5; }
-        }
-        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
 </head>
 <body>
     <div id="root"></div>
     
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-        const { Send, X, LogOut, Plus, LogIn } = window.lucide;
+    <script>
+        // Embutir o marketplace-completo.jsx aqui
+        // Copie todo o conteúdo do arquivo marketplace-completo.jsx
+        // e cole aqui entre as tags script
+        
+        // Por enquanto, vou criar uma versão simplificada
+        const { useState, useEffect } = React;
 
-        const Marketplace = () => {
+        function MarketHub() {
+            const [tela, setTela] = useState('inicio');
+            const [usuarioLogado, setUsuarioLogado] = useState(null);
+            const [loginEmail, setLoginEmail] = useState('');
+            const [loginSenha, setLoginSenha] = useState('');
+
+            const [usuarios, setUsuarios] = useState(JSON.parse(localStorage.getItem('usuarios')) || {
+                'teste@test.com': { 
+                    id: 'teste123', 
+                    nome: '🧪 Teste Completo', 
+                    email: 'teste@test.com', 
+                    senha: '123', 
+                    cidade: 'Santa Rosa'
                 }
             });
 

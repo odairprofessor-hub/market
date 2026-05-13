@@ -1,0 +1,352 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Send, Plus, X, MessageCircle, Package, TrendingUp } from 'lucide-react';
+
+const LojaInteligente = () => {
+  const [produtos, setProdutos] = useState([
+    {
+      id: 1,
+      nome: 'iPhone 13',
+      preco: 2500,
+      imagem: '📱',
+      descricao: 'Smartphone em excelente estado, sem arranhões',
+      estoque: 2
+    },
+    {
+      id: 2,
+      nome: 'MacBook Air M1',
+      preco: 5000,
+      imagem: '💻',
+      descricao: 'Computador potente, pouco uso, com capa',
+      estoque: 1
+    }
+  ]);
+
+  const [produtoAtual, setProdutoAtual] = useState(null);
+  const [mensagens, setMensagens] = useState([]);
+  const [inputMsg, setInputMsg] = useState('');
+  const [novoNome, setNovoNome] = useState('');
+  const [novoPreco, setNovoPreco] = useState('');
+  const [novaDescricao, setNovaDescricao] = useState('');
+  const [novoEmoji, setNovoEmoji] = useState('📦');
+  const [mostrFormProduto, setMostrFormProduto] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [mensagens]);
+
+  const gerarRespostaNegociacao = (mensagem, produtoId) => {
+    const produto = produtos.find(p => p.id === produtoId);
+    const msgLower = mensagem.toLowerCase();
+
+    const padroesPergunta = {
+      desconto: /desconto|menor preço|reduz|promoção|final/i,
+      disponivel: /tem|disponível|stock|estoque|quanto/i,
+      entrega: /entrega|envio|frete|leva quanto|quando/i,
+      condicao: /condição|estado|arranhado|funcionando|novo/i,
+      negociacao: /pode fazer|quanto é o mínimo|qual é o preço mínimo/i
+    };
+
+    const respostas = {
+      desconto: [
+        `🤔 O preço atual é R$ ${produto.preco.toLocaleString('pt-BR')}. Posso oferecer 5% de desconto se você vir buscar hoje!`,
+        `💰 Temos flexibilidade! Se levar 2 unidades, faço R$ ${Math.round(produto.preco * 0.9).toLocaleString('pt-BR')} cada.`,
+        `✅ Melhor oferta: R$ ${Math.round(produto.preco * 0.92).toLocaleString('pt-BR')} à vista. Que acha?`
+      ],
+      disponivel: [
+        `✓ Temos ${produto.estoque} unidade(s) em estoque! Pronta para entrega.`,
+        `📦 Disponível agora mesmo! Você está interessado?`,
+        `✅ Sim, ainda temos! Quando você gostaria de vir ver?`
+      ],
+      entrega: [
+        `🚚 Posso entregar em São Paulo. Qual é seu endereço?`,
+        `📍 Dependendo da região, entrego em até 2 dias úteis.`,
+        `🏠 Você vem buscar aqui ou precisa de entrega?`
+      ],
+      condicao: [
+        `⭐ Estado de novo! Usado apenas algumas vezes, sem nenhum defeito.`,
+        `✨ Conservado! Sem arranhões, tudo funcionando perfeitamente.`,
+        `🔧 Funciona 100%. Pode testar quando vir!`
+      ],
+      negociacao: [
+        `💬 Qual é sua proposta? Estou aberto a negociar!`,
+        `🤝 Posso fazer R$ ${Math.round(produto.preco * 0.85).toLocaleString('pt-BR')}. Fecha?`,
+        `📊 Qual é o valor que você pagaria?`
+      ]
+    };
+
+    // Encontrar categoria que combina
+    for (const [categoria, padrao] of Object.entries(padroesPergunta)) {
+      if (padrao.test(msgLower)) {
+        const opcoes = respostas[categoria];
+        return opcoes[Math.floor(Math.random() * opcoes.length)];
+      }
+    }
+
+    // Resposta padrão
+    const respostasPadrao = [
+      `Ótimo interesse em "${produto.nome}"! 👍 Posso ajudar com mais detalhes?`,
+      `${produto.nome} é realmente bom! O que você gostaria de saber?`,
+      `Sim! Você quer agendar uma visita?`
+    ];
+
+    return respostasPadrao[Math.floor(Math.random() * respostasPadrao.length)];
+  };
+
+  const handleEnviarMsg = () => {
+    if (!inputMsg.trim() || !produtoAtual) return;
+
+    const novaMensagem = {
+      id: Date.now(),
+      tipo: 'usuario',
+      texto: inputMsg,
+      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setMensagens(prev => [...prev, novaMensagem]);
+    setInputMsg('');
+
+    // Simular resposta do bot após 800ms
+    setTimeout(() => {
+      const resposta = {
+        id: Date.now() + 1,
+        tipo: 'bot',
+        texto: gerarRespostaNegociacao(inputMsg, produtoAtual.id),
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      };
+      setMensagens(prev => [...prev, resposta]);
+    }, 800);
+  };
+
+  const abrirChat = (produto) => {
+    setProdutoAtual(produto);
+    setMensagens([
+      {
+        id: 1,
+        tipo: 'bot',
+        texto: `Olá! 👋 Bem-vindo! Estou aqui para ajudar com ${produto.nome}. Qual é sua dúvida?`,
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      }
+    ]);
+  };
+
+  const fecharChat = () => {
+    setProdutoAtual(null);
+    setMensagens([]);
+  };
+
+  const adicionarProduto = () => {
+    if (!novoNome.trim() || !novoPreco) return;
+
+    const novoProduto = {
+      id: Date.now(),
+      nome: novoNome,
+      preco: parseInt(novoPreco),
+      imagem: novoEmoji,
+      descricao: novaDescricao || 'Produto em bom estado',
+      estoque: 1
+    };
+
+    setProdutos(prev => [...prev, novoProduto]);
+    setNovoNome('');
+    setNovoPreco('');
+    setNovaDescricao('');
+    setNovoEmoji('📦');
+    setMostrFormProduto(false);
+  };
+
+  const deletarProduto = (id) => {
+    setProdutos(prev => prev.filter(p => p.id !== id));
+  };
+
+  return (
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6 shadow-xl">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 mb-2">
+            <TrendingUp size={32} />
+            <h1 className="text-3xl font-bold">Loja Inteligente</h1>
+          </div>
+          <p className="text-amber-50">Venda com negociação autônoma via chatbot</p>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto p-6">
+        {!produtoAtual ? (
+          <>
+            {/* Botão Adicionar */}
+            <div className="mb-6">
+              <button
+                onClick={() => setMostrFormProduto(!mostrFormProduto)}
+                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-emerald-600 transition font-semibold shadow-lg"
+              >
+                <Plus size={20} /> Adicionar Produto
+              </button>
+            </div>
+
+            {/* Formulário de Novo Produto */}
+            {mostrFormProduto && (
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 mb-6">
+                <h3 className="text-white text-xl font-bold mb-4">Novo Produto</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Nome do produto"
+                    value={novoNome}
+                    onChange={(e) => setNovoNome(e.target.value)}
+                    className="px-4 py-3 rounded-lg bg-white/90 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Preço (R$)"
+                    value={novoPreco}
+                    onChange={(e) => setNovoPreco(e.target.value)}
+                    className="px-4 py-3 rounded-lg bg-white/90 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Emoji (ex: 📱)"
+                    value={novoEmoji}
+                    onChange={(e) => setNovoEmoji(e.target.value)}
+                    maxLength="2"
+                    className="px-4 py-3 rounded-lg bg-white/90 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Descrição"
+                    value={novaDescricao}
+                    onChange={(e) => setNovaDescricao(e.target.value)}
+                    className="px-4 py-3 rounded-lg bg-white/90 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+                <div className="flex gap-3 mt-4">
+                  <button
+                    onClick={adicionarProduto}
+                    className="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-lg font-semibold transition"
+                  >
+                    Adicionar
+                  </button>
+                  <button
+                    onClick={() => setMostrFormProduto(false)}
+                    className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded-lg font-semibold transition"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Grid de Produtos */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {produtos.map(produto => (
+                <div
+                  key={produto.id}
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden hover:border-amber-500/50 transition shadow-lg group"
+                >
+                  <div className="bg-gradient-to-br from-amber-500 to-orange-500 h-32 flex items-center justify-center text-6xl group-hover:scale-110 transition">
+                    {produto.imagem}
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-white font-bold text-lg mb-2">{produto.nome}</h3>
+                    <p className="text-gray-300 text-sm mb-4">{produto.descricao}</p>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-2xl font-bold text-amber-400">
+                        R$ {produto.preco.toLocaleString('pt-BR')}
+                      </span>
+                      <span className="text-xs bg-green-500/30 text-green-200 px-3 py-1 rounded-full">
+                        {produto.estoque} em estoque
+                      </span>
+                    </div>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => abrirChat(produto)}
+                        className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-4 py-2 rounded-lg font-semibold transition flex items-center justify-center gap-2"
+                      >
+                        <MessageCircle size={18} /> Negociar
+                      </button>
+                      <button
+                        onClick={() => deletarProduto(produto.id)}
+                        className="bg-red-500/20 hover:bg-red-500/40 text-red-300 p-2 rounded-lg transition"
+                      >
+                        <X size={20} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          /* Chat Window */
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-end md:justify-center p-4 z-50">
+            <div className="w-full md:w-96 h-screen md:h-[600px] bg-white rounded-2xl md:rounded-xl shadow-2xl flex flex-col overflow-hidden">
+              {/* Chat Header */}
+              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">{produtoAtual.imagem}</span>
+                  <div>
+                    <h3 className="font-bold">{produtoAtual.nome}</h3>
+                    <p className="text-xs text-blue-100">R$ {produtoAtual.preco.toLocaleString('pt-BR')}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={fecharChat}
+                  className="hover:bg-white/20 p-2 rounded-lg transition"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Mensagens */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-gray-50 to-gray-100">
+                {mensagens.map(msg => (
+                  <div
+                    key={msg.id}
+                    className={`flex ${msg.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-xs px-4 py-2 rounded-lg ${
+                        msg.tipo === 'usuario'
+                          ? 'bg-blue-500 text-white rounded-br-none'
+                          : 'bg-gray-300 text-gray-900 rounded-bl-none'
+                      }`}
+                    >
+                      <p className="text-sm">{msg.texto}</p>
+                      <p className="text-xs opacity-70 mt-1">{msg.timestamp}</p>
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Input */}
+              <div className="border-t border-gray-200 p-4 bg-white flex gap-3">
+                <input
+                  type="text"
+                  placeholder="Sua mensagem..."
+                  value={inputMsg}
+                  onChange={(e) => setInputMsg(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleEnviarMsg()}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={handleEnviarMsg}
+                  className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition"
+                >
+                  <Send size={20} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default LojaInteligente;
